@@ -1,0 +1,59 @@
+body {
+  background: radial-gradient(center, #fff, #fff 50%, #aaa);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+.baymax {
+  border-bottom: 1.5em solid #000;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  width: 50%;
+  transform: translate(-50%, -40%);
+}
+
+.baymax::before {
+  animation: blink 6s infinite;
+  content: "";
+  background: #000;
+  background: linear-gradient(to bottom, #efefef, #efefef 50%, #000 50%, #000);
+  background-size: 200%;
+  background-position: 0 -100%;
+  border-radius: 50%;
+  position: absolute;
+  width: 12em;
+  height: 12em;
+  left: -9em;
+  top: -6em;
+  transform: skewX(-4deg);
+}
+
+.baymax::after {
+  animation: blink 6s 0.1s infinite;
+  content: "";
+  background: #000;
+  background: linear-gradient(to bottom, #efefef, #efefef 50%, #000 50%, #000);
+  background-size: 200%;
+  background-position: 0 -100%;
+  border-radius: 50%;
+  position: absolute;
+  width: 12em;
+  height: 12em;
+  right: -9em;
+  top: -6em;
+  transform: skewX(4deg);
+}
+
+@keyframes blink {
+  0%, 50% {
+    background-position: 0 100%;
+  }
+  85%, 95% {
+    background-position: 0 75%;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
