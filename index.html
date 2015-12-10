@@ -43,6 +43,7 @@ RFduino from a PC or Mac.
 	<script src="libs/evothings/evothings.js"></script>
 	<script src="libs/evothings/ui/ui.js"></script>
 	<script src="libs/evothings/rfduinoble/rfduinoble.js"></script>
+	<script type="text/javascript" src="jquery.idle.js"></script>
 
 </head>
 
@@ -57,7 +58,7 @@ RFduino from a PC or Mac.
 
 		<button class="menu" onclick=""><img src="ui/images/menu.svg" /></button>
 	</header>-->
-
+	<div id="control_panel">
 	<h1>Baymax</h1>
 
 	<p id="info" class="lead">Initializing...</p>
@@ -78,21 +79,29 @@ RFduino from a PC or Mac.
 	
 	<br>
 	
-	<button type="button" class="yellow" onclick="showFace">
+	<h2>Instructions</h2>
+	<p>Hello, I am the BDWbot. Let me help show you around the Brown Design Workshop! I can help answer questions or you can use Skype to call a mentor.</p>
+	
+	<button type="button" class="yellow" onclick="showFace()">
 		Show Face
 	</button>
+	
+	<button type="button" class="yellow" onclick="Open Navigation Pane">
+		Navigate!
+	</button>
+	</div>
+	
+	
 
 	<head>
 		<link rel="stylesheet" type="text/css" href="baymax.css">
 	</head>
-	<div id="baymax" class="baymax" ></div>
-	<script>
-		$("#baymax").hide()
-	</script>
-	
-	<h2>Instructions</h2>
-	<p>This turns the camera left and right. It allows the user to turn the camera left or right during skype conferencing.</p>
+	<div id="baymax" class="baymax" >
+	</div>
+	<button class = "baymax_close" id="baymax_close" onclick="showFace()">X</button>
 
+	
+	
 	<!-- TODO: Image is missing.
 	<p><img src="RFduino_Image.png" style="max-height:30%;" /></p>
 	-->
@@ -109,10 +118,24 @@ RFduino from a PC or Mac.
 	// Connected device.
 	app.device = null;
 
+	$("#baymax").hide();
+	$("#baymax_close").hide()
+	
 	showFace = function()
 	{
+		$("#baymax").toggle();
+		$("#control_panel").toggle();
+		$("#baymax_close").toggle();
+		$('body').toggleClass("bay_background");
+		hyper.log("Baymax Shown");
 	}
 	
+	showFace();
+	//
+	$("#baymax").on('click', showFace);
+	
+	//$(document).idle({onIdle:showFace(), onActive:showFace(), idle: 3000});
+
 	// Turn on LED.
 	app.ledOn = function()
 	{

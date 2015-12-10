@@ -1,49 +1,92 @@
-body {
+html, body {
+	position: relative;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+
+.baymax_close {
+	position: absolute;
+	top:  0;
+	right: 0;
+	height: 1em;
+	width: 1em;
+	text-align: center;
+	border: 0;
+	padding: 0;
+	z-index:101;
+}
+
+.bay_background {
+  background: -webkit-radial-gradient(center, #fff, #fff 50%, #aaa);
   background: radial-gradient(center, #fff, #fff 50%, #aaa);
   background-size: 100%;
   background-repeat: no-repeat;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 
+
 .baymax {
-  border-bottom: 1.5em solid #000;
+  border-bottom: 0.5em solid #000;
   position: absolute;
-  top: 70%;
+  top: 50%;
   left: 50%;
   width: 50%;
-  transform: translate(-50%, -40%);
+  -webkit-transform: translate(-50%, -40%);
+          transform: translate(-50%, -40%);
+   z-index: 100;
 }
 
 .baymax::before {
-  animation: blink 6s infinite;
+  -webkit-animation: blink 6s infinite;
+          animation: blink 6s infinite;
   content: "";
   background: #000;
+  background: -webkit-linear-gradient(top, #efefef, #efefef 50%, #000 50%, #000);
   background: linear-gradient(to bottom, #efefef, #efefef 50%, #000 50%, #000);
   background-size: 200%;
   background-position: 0 -100%;
   border-radius: 50%;
   position: absolute;
-  width: 12em;
-  height: 12em;
-  left: -9em;
-  top: -6em;
-  transform: skewX(-4deg);
+  width: 3em;
+  height: 3em;
+  left: -1.5em;
+  top: -1em;
+  -webkit-transform: skewX(-4deg);
+          transform: skewX(-4deg);
 }
 
 .baymax::after {
-  animation: blink 6s 0.1s infinite;
+  -webkit-animation: blink 6s 0.1s infinite;
+          animation: blink 6s 0.1s infinite;
   content: "";
   background: #000;
+  background: -webkit-linear-gradient(top, #efefef, #efefef 50%, #000 50%, #000);
   background: linear-gradient(to bottom, #efefef, #efefef 50%, #000 50%, #000);
   background-size: 200%;
   background-position: 0 -100%;
   border-radius: 50%;
   position: absolute;
-  width: 12em;
-  height: 12em;
-  right: -9em;
-  top: -6em;
-  transform: skewX(4deg);
+  width: 3em;
+  height: 3em;
+  right: -1.5em;
+  top: -1em;
+  -webkit-transform: skewX(4deg);
+          transform: skewX(4deg);
+}
+
+@-webkit-keyframes blink {
+  0%, 50% {
+    background-position: 0 100%;
+  }
+  85%, 95% {
+    background-position: 0 75%;
+  }
+  100% {
+    background-position: 0 100%;
+  }
 }
 
 @keyframes blink {
