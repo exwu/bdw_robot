@@ -15,7 +15,7 @@ RFduino from a PC or Mac.
 	<meta name="viewport" content="width=device-width, user-scalable=no
 		initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
 
-	<title>RFduino LED On/Off</title>
+	<title>BDWBot</title>
 
 	<style>
 		@import 'ui/css/evothings-app.css';
@@ -43,7 +43,7 @@ RFduino from a PC or Mac.
 	<script src="libs/evothings/evothings.js"></script>
 	<script src="libs/evothings/ui/ui.js"></script>
 	<script src="libs/evothings/rfduinoble/rfduinoble.js"></script>
-	<script type="text/javascript" src="jquery.idle.js"></script>
+	<script type="text/javascript" src="graph.js"></script>
 
 </head>
 
@@ -59,15 +59,21 @@ RFduino from a PC or Mac.
 		<button class="menu" onclick=""><img src="ui/images/menu.svg" /></button>
 	</header>-->
 	<div id="control_panel">
-	<h1>Baymax</h1>
+	<center><h1>Moe</h1><p>"Hello my name is Moe, the digital monitor." How may I help you today?<center>
 
+	 <a href="skype:echo123?call">Call</a> the Skype Echo / Sound Test Service 
 	<p id="info" class="lead">Initializing...</p>
 
-	<button type="button" class="yellow" onclick="app.connect()">
+	<center><button type="button" class="yellow" onclick="app.connect()">
 		Connect
 	</button>
+	<button type="button" class="green" onclick="showInstructions()">
+		How to use
+	</button>
+	<button type="button" class="blue" onclick="showFace()">
+		Show Face</button></center>
 
-	<br />
+	<!--<br />
 
 	<button type="button" class="blue" onclick="app.ledOn()">
 		Turn Right
@@ -77,28 +83,48 @@ RFduino from a PC or Mac.
 		Turn Left
 	</button>
 	
-	<br>
+	<br>-->
 	
-	<h2>Instructions</h2>
-	<p>Hello, I am the BDWbot. Let me help show you around the Brown Design Workshop! I can help answer questions or you can use Skype to call a mentor.</p>
+	<center>
 	
-	<button type="button" class="yellow" onclick="showFace()">
-		Show Face
-	</button>
+	</center>
 	
-	<button type="button" class="yellow" onclick="Open Navigation Pane">
+	<style>
+		.large_combobox  {
+			width: 50%;
+			height: 25%;
+			line-height: 100%;
+			font-size: 100%;
+			padding: 0 0 0 2px;
+		}
+	</style>
+	
+	<select id="destination" class='large_combobox'>
+    </select>
+	<button type="button" class="charcoal" onclick="route_directions()">
 		Navigate!
 	</button>
+	
+	
+
+	
+	<!--<h2>Instructions</h2>
+	<p>Hello, I am the BDWbot. Let me help show you around the Brown Design Workshop! I can help answer questions or you can use Skype to call a mentor.</p>
+	-->
 	</div>
-	
-	
 
 	<head>
 		<link rel="stylesheet" type="text/css" href="baymax.css">
 	</head>
+	
 	<div id="baymax" class="baymax" >
 	</div>
 	<button class = "baymax_close" id="baymax_close" onclick="showFace()">X</button>
+
+	<p  hidden id="instructions" style="width: 100%; height: 100%;">
+	Hello, I am the BDWbot. Let me help show you around the Brown Design Workshop! I can help answer questions or you can use Skype to call a mentor.
+	</p>
+	<button hidden class = "baymax_close" id="instructions_close" onclick="showInstructions()">X</button>
 
 	
 	
@@ -109,6 +135,7 @@ RFduino from a PC or Mac.
 	<!-- JavaScript code for the app -->
 
 	<script>
+		
 	// Short name for RFduino BLE library.
 	var rfduinoble = evothings.rfduinoble;
 
@@ -128,6 +155,13 @@ RFduino from a PC or Mac.
 		$("#baymax_close").toggle();
 		$('body').toggleClass("bay_background");
 		hyper.log("Baymax Shown");
+	}
+	
+	showInstructions = function()
+	{
+		$("#instructions").toggle();
+		$("#instructions_close").toggle();
+		hyper.log("Instructions Shown");
 	}
 	
 	showFace();
@@ -169,12 +203,12 @@ RFduino from a PC or Mac.
 		rfduinoble.close();
 
 		// Wait 500 ms for close to complete before connecting.
-		setTimeout(function()
+	 	setTimeout(function()
 		{
 			console.log("connecting");
 			app.showMessage("Connecting...");
 			rfduinoble.connect(
-				"Holo-Timer",
+				"BDWBot",
 				function(device)
 				{
 					console.log("connected");
@@ -189,11 +223,93 @@ RFduino from a PC or Mac.
 			500);
 	};
 
+	
+	app.startReading = function()
+	{
+		hyper.log('Enabling notifications...');
+
+		// Turn notifications on.
+		app.write(
+			'writeDescriptor',
+			'BDWBot',
+			app.descriptorNotification,
+			new Uint8Array([1,0]));
+
+		// Start reading notifications.
+		evothings.ble.enableNotification(
+			'BDWBot',
+			app.characteristicRead,
+			function(data)
+			{
+				hyper.log('Active');
+				hyper.log("READING DATA:" + data);
+				//app.drawLines([new DataView(data).getUint16(0, true)]);
+			},
+			function(errorCode)
+			{
+				hyper.log('enableNotification error: ' + errorCode);
+			});
+	};
+	
 	// When the app is fully loaded the "deviceready" event is triggered.
 	document.addEventListener(
 		'deviceready',
 		function() { evothings.scriptsLoaded(app.onDeviceReady) },
 		false);
+	
+	
+	//jQuery.getScript('jquery.idle.js',
+	//	function(){
+	//		$(document).idle(inside);
+	//	}
+	//);
+
+	
+	/* This list should store all nodes in counterclockwise order. This way it knows how to get to each node.*/
+	var adjaceny_list = {a: ['b', '\0', 'c'], 'b': ['a', '\0', 'c'], 'c' : ['a', '\0', 'b']};
+	
+	/*This list should store the distance to each node from each node. T*/
+	var map = {a:{b:3,c:1},b:{a:2,c:1},c:{a:4,b:1}};
+	
+	var graph = new Graph(map);
+	
+	/*This populates the destination box with all the keys from map.*/
+	var options = $("#destination");
+	$.each(Object.keys(map), function() {
+		options.append($("<option />").text(this)); 
+	});
+
+	var current_point ='a';
+	
+	function route(){
+		var src = current_point;
+		var destination = $('#destination').find(":selected").text();
+		return graph.findShortestPath(src, destination);
+	}
+	
+	function route_directions(){
+		var path = route();
+		var directions = [];
+		var old_point = null;
+		for(var i = 0; i < path.length; i++){
+			assert(path[i] != null);
+			var next_dir = adjaceny_list[current_point].indexOf(path[i]);
+			if(old_point == null){
+				next_dir -= old_point;
+				next_dir = next_dir % 3;
+			}
+			if(next_dir == -1){
+				hyper.log("ERROR: Adjaceny list does not match returned path");
+				return;
+			}
+			directions.append(next_dir);
+			current_point = next_dir;
+		}
+		return directions;
+	}
+	
+	app.connect();
+	
 	</script>
 </body>
 </html>
