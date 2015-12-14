@@ -1,3 +1,4 @@
+
 #include <Adafruit_MotorShield.h>
 
 #include <Wire.h>
@@ -63,6 +64,8 @@ void setup() {
   pinMode(rightPin, INPUT); 
   pinMode(nextPin, OUTPUT); 
 
+  digitalWrite(nextPin, HIGH); 
+
   
 
  
@@ -126,7 +129,6 @@ void loop() {
   intersecting = atIntersection(l); 
   
   if (intersecting) {
-    Serial.println(command); 
     // if we're intersecting, 
     // go in the direction of the next command from the rfduino
     if (next_command == NONE) {
@@ -152,6 +154,11 @@ void loop() {
 
 
 void listenForCommands() {
+  Serial.print(digitalRead(leftPin));
+  Serial.print(digitalRead(rightPin));
+  Serial.print(digitalRead(fwdPin));
+  Serial.println(); 
+  delay(1000); 
  
   int command = NONE; 
   if (digitalRead(nextPin) == HIGH) {
@@ -159,10 +166,16 @@ void listenForCommands() {
     // doesn't accurate reflect if we're actually requesting the next command
     if (digitalRead(fwdPin) == HIGH) {
       command = FF; 
+      
+    Serial.print("got command "); 
     } else if (digitalRead(leftPin) == HIGH) {
       command = LL; 
+      
+    Serial.print("got command "); 
     } else if (digitalRead(rightPin) == HIGH) {
       command = RR; 
+      
+    Serial.print("got command "); 
     }
   }
   if (command != NONE) {

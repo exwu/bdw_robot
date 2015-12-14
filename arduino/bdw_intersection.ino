@@ -1,4 +1,5 @@
 #include <RFduinoBLE.h>
+// for the rfduino
 
 #define queue_size 100
 int queue_start = 0; 
@@ -68,6 +69,7 @@ void loop() {
 
 void RFduinoBLE_onReceive(char *data, int len) {
   // on receiving a command, stash it in the queue to be used later. 
+  Serial.println(data); 
   int dir = NONE;
   if (data[0] == fwd){
     dir = FF; 
