@@ -70,7 +70,8 @@ RFduino from a PC or Mac.
 		How to use
 	</button>
 	<button type="button" class="blue" onclick="showFace()">
-		Show Face</button></center>
+		Show Face</button>
+	</center>
 
 	<!--<br />
 
@@ -153,6 +154,7 @@ RFduino from a PC or Mac.
 		$("#control_panel").toggle();
 		$("#baymax_close").toggle();
 		$('body').toggleClass("bay_background");
+		$('#instructions').hide();
 		hyper.log("Baymax Shown");
 	}
 	
@@ -240,8 +242,8 @@ RFduino from a PC or Mac.
 			app.characteristicRead,
 			function(data)
 			{
-				hyper.log('Active');
-				hyper.log("READING DATA:" + data);
+				console.log('Active');
+				console.log("READING DATA:" + data);
 				//app.drawLines([new DataView(data).getUint16(0, true)]);
 			},
 			function(errorCode)
@@ -264,9 +266,7 @@ RFduino from a PC or Mac.
 	//);
 
 	
-	/* This list should store all nodes in counterclockwise order. This way it knows how to get to each node.*/
-	var adjaceny_list = {'a': ['b', '\0', 'c'], 'b': ['a', '\0', 'c'], 'c' : ['a', '\0', 'b']};
-	
+	/* This list should store all nodes in counterclockwise order. This way it knows how to get to each node.*/	
 	/*This list should store the distance to each node from each node. T*/
 	var map = {'a':{'b':3,'c':1},'b':{'a':2,'c':1},'c':{'a':4,'b':1}};
 		
@@ -280,17 +280,25 @@ RFduino from a PC or Mac.
 	
 	function route(){
 		var src = current_point;
-		var destination = $('#destination').find(":selected").text();
-		src = 'a';
-		destination = 'b';
+		//var destination = $('#destination').find(":selected").val(this).text();
+		console.log(destination);
+		var mylist = document.getElementById('destination');
+		var destination;
+		if(mylist == null){
+			destination = 'b';
+		} else {
+			destination = mylist.options[mylist.selectedIndex].text;
+		}
 		var graph = new Graph(map);
 		var path = graph.findShortestPath(src, destination);
+		
 		return path;
 	}
 	
 	function custom_index(array, item){
+		array = array[0];
 		for(var i = 0; i < array.length; i++){
-			console.log(array[i]);
+			console.log("Finding Index: " + array[i]);
 			if(array[i] == item){
 				return i;
 			}
@@ -300,24 +308,34 @@ RFduino from a PC or Mac.
 	}
 
 	function route_directions(){
+		var adjaceny_list = {'a': ['b', '\0', 'c'], 'b': ['a', '\0', 'c'], 'c' : ['a', '\0', 'b']};
 		var path = route();
 		var directions = [];
 		var old_point = null;
+		console.log("ROUTING");
+		var current_point = path[0];
+		console.log('starting point: ' + current_point);
 		for(var i = 1; i < path.length; i++){
-			console.log([adjaceny_list[current_point]]);
-			console.log(path[i]);
+			console.log("Adjaceny List");
+			var neighbors = adjaceny_list[current_point]; //The bug is here but I can't find it...
+			console.log("Console logs: " + path[i]);
+			console.log("NEIGHBORS" + neighbors);
+			//console.log("Path: " + neighbors[2]); 
 			var next_dir = custom_index([adjaceny_list[current_point]], path[i]);
 			if(next_dir == -1){
-				hyper.log("ERROR: Adjaceny list does not match returned path");
+				console.log("ERROR: Adjaceny list does not match returned path");
 				//return;
 			}
 			if(old_point == null){
 				next_dir -= old_point;
-				next_dir = next_dir % 4 + 4;
+				next_dir = (next_dir + 4) % 4;
 			}
-			
 			directions.push(next_dir);
 			current_point = next_dir;
+		}
+		if(directions.length == 0){
+			console.log("not returning directions");
+			return; //No directions
 		}
 		console.log("Directions");
 		console.log(directions);
